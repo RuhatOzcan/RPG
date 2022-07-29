@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dotnet_rpg.Data;
+using dotnet_rpg.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
-using RPG.Data;
-using RPG.DTos.Character.User;
 
-namespace RPG.Controllers
+namespace dotnet_rpg.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -23,27 +23,24 @@ namespace RPG.Controllers
         public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegisterDto request)
         {
             var response = await _authRepo.Register(
-                new User { Username = request.UserName }, request.Password
+                new User { Username = request.Username }, request.Password
             );
             if (!response.Success)
             {
                 return BadRequest(response);
             }
             return Ok(response);
-
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<ServiceResponse<string>>> Login(UserLoginDto request)
         {
-            var response = await _authRepo.Login(request.Username,request.Password);
-            
+            var response = await _authRepo.Login(request.Username, request.Password);
             if (!response.Success)
             {
                 return BadRequest(response);
             }
             return Ok(response);
-
         }
     }
 }

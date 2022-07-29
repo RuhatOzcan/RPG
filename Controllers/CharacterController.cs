@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using dotnet_rpg.Dtos.Character;
+using dotnet_rpg.Services.CharacterService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RPG.DTos.Character;
-using RPG.Services.CharacterService;
 
-namespace RPG.Controllers
+namespace dotnet_rpg.Controllers
 {
     [Authorize]
     [ApiController]
@@ -16,31 +16,20 @@ namespace RPG.Controllers
     public class CharacterController : ControllerBase
     {
         private readonly ICharacterService _characterService;
-
         public CharacterController(ICharacterService characterService)
         {
             _characterService = characterService;
         }
 
-        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> Get()
         {
-            int userId =int.Parse(User.Claims.FirstOrDefault(c=>c.Type==ClaimTypes.NameIdentifier).Value);
-            return Ok(await _characterService.GetAllCharacters(userId));
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> GetSingle(int id)
-        {
-
-            return Ok(await _characterService.GetCharacterById(id));
+            return Ok(await _characterService.GetAllCharacters());
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> Delete(int id)
         {
-
             var response = await _characterService.DeleteCharacter(id);
             if (response.Data == null)
             {
@@ -49,10 +38,15 @@ namespace RPG.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> GetSingle(int id)
+        {
+            return Ok(await _characterService.GetCharacterById(id));
+        }
+
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddCharacter(AddCharacterDto newCharacter)
         {
-
             return Ok(await _characterService.AddCharacter(newCharacter));
         }
 
@@ -66,6 +60,6 @@ namespace RPG.Controllers
             }
             return Ok(response);
         }
-    }
 
+    }
 }
